@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F141C">
+<title>Протокол-102 · заметки для совещаний</title>
+<style>
+:root{
+  --bg:#0F141C; --surface:#161D28; --field:#1D2634; --line:#2A3648;
+  --text:#E9EFF7; --muted:#93A6C0; --amber:#F2B441; --blue:#4EA1FF;
+  --green:#7CE38B; --red:#FF6B6B; --violet:#C77DFF;
+  --shadow:0 18px 40px rgba(0,0,0,.45); --status-h:38px;
+}
+[data-theme="light"]{
+  --bg:#F4F1EA; --surface:#FFFFFF; --field:#F2EFE8; --line:#DED7CA;
+  --text:#1B2430; --muted:#6B7787; --amber:#B8791A; --blue:#1F6FD0;
+  --green:#2E8B57; --red:#C0392B; --violet:#7B4BB7; --shadow:0 14px 30px rgba(30,25,15,.14);
+}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;height:100vh;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);
+  font:15px/1.5 "Segoe UI",Roboto,-apple-system,"Helvetica Neue",sans-serif;
+  display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+   radial-gradient(900px 480px at 10% -12%, color-mix(in srgb,var(--amber) 13%,transparent), transparent 62%),
+   radial-gradient(760px 420px at 102% -6%, color-mix(in srgb,var(--blue) 12%,transparent), transparent 60%),
+   radial-gradient(680px 420px at 50% 118%, color-mix(in srgb,var(--violet) 9%,transparent), transparent 62%)}
+h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+button,input,select,textarea{font:inherit;color:inherit}
+::-webkit-scrollbar{width:10px;height:8px}
+::-webkit-scrollbar-track{background:color-mix(in srgb,var(--bg) 70%,var(--surface))}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--amber);background-clip:padding-box}
+*{scrollbar-color:var(--line) var(--bg);scrollbar-width:thin}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+input[type=checkbox]{accent-color:var(--amber);width:16px;height:16px;cursor:pointer}
+
+.top,.tools,.views,.wrap,.status{position:relative;z-index:1}
+.top{flex:none;display:flex;align-items:center;gap:12px;padding:11px 16px;
+  background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line)}
+.mark{width:38px;height:38px;display:grid;place-items:center;border:2px solid var(--amber);color:var(--amber);
+  font-family:Georgia,serif;font-weight:700;border-radius:11px;flex:none;
+  box-shadow:0 0 18px color-mix(in srgb,var(--amber) 28%,transparent)}
+.brand h1{margin:0;font-size:19px}
+.brand p{margin:0;font-size:11.5px;color:var(--muted)}
+.spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--line);
+  border-radius:999px;background:var(--field);font-size:12px;color:var(--muted);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px currentColor}
+.icon-btn{width:38px;height:38px;flex:none;border-radius:11px;border:1px solid var(--line);background:var(--field);
+  display:grid;place-items:center;cursor:pointer;transition:.15s}
+.icon-btn:hover{border-color:var(--amber);color:var(--amber)}
+
+.tools{flex:none;display:flex;flex-wrap:wrap;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);
+  background:color-mix(in srgb,var(--surface) 55%,transparent)}
+.search{flex:1 1 240px;display:flex;align-items:center;gap:8px;background:var(--field);
+  border:1px solid var(--line);border-radius:12px;padding:0 12px;min-width:0}
+.search input{flex:1;min-width:0;background:none;border:0;padding:11px 0;outline:none}
+.filters{display:flex;gap:8px;align-items:center}
+select,input[type=date],input[type=time],input[type=text],textarea{
+  background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none;min-width:0}
+select:focus,input:focus,textarea:focus{border-color:var(--amber)}
+.btn{border:1px solid var(--line);background:var(--field);border-radius:11px;padding:10px 15px;cursor:pointer;
+  transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--amber)}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#12161d;font-weight:600}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
+.btn.ghost{background:none}
+.btn.sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.views{flex:none;display:flex;align-items:center;gap:8px;padding:8px 16px;overflow-x:auto;
+  border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surface) 30%,transparent)}
+.view{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:999px;font-size:12.5px;
+  border:1px dashed var(--line);background:var(--field);cursor:pointer;white-space:nowrap}
+.view:hover{border-color:var(--violet);color:var(--violet)}
+.view b{font-weight:600}
+.view span.x{color:var(--muted);padding:0 2px}
+.view span.x:hover{color:var(--red)}
+
+.wrap{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:14px;padding:14px 16px}
+.pane{display:flex;flex-direction:column;min-height:0;min-width:0}
+.list-head{flex:none;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12.5px;padding:0 2px 8px}
+.bulkbar{flex:none;display:none;align-items:center;gap:8px;margin:0 0 10px;padding:8px 12px;border-radius:12px;
+  background:color-mix(in srgb,var(--amber) 14%,var(--surface));border:1px solid var(--amber);font-size:13px}
+.bulkbar.show{display:flex;flex-wrap:wrap}
+.list{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:11px;padding:2px 6px 20px 2px}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:13px 15px 13px 19px;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden}
+.card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c,var(--amber))}
+.card:hover{transform:translateY(-2px);border-color:var(--c,var(--amber));box-shadow:var(--shadow)}
+.card.active{border-color:var(--amber);box-shadow:var(--shadow)}
+.card.sel{background:color-mix(in srgb,var(--amber) 8%,var(--surface))}
+.card h3{margin:0 0 6px;font-size:16.5px;line-height:1.3}
+.card .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-bottom:7px}
+.card .snippet{margin:0;font-size:13.5px;color:color-mix(in srgb,var(--text) 76%,var(--muted));
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.badge{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--c,var(--line));
+  color:var(--c,var(--muted));background:color-mix(in srgb,var(--c,var(--line)) 14%,transparent);white-space:nowrap}
+.tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:11px;color:var(--violet);border:1px dashed color-mix(in srgb,var(--violet) 45%,var(--line));
+  padding:2px 8px;border-radius:7px}
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+
+.editor{display:flex;flex-direction:column;min-height:0;background:var(--surface);border:1px solid var(--line);
+  border-radius:16px;overflow:hidden}
+.ed-head{flex:none;display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.ed-head h2{margin:0;font-size:17px;flex:1}
+.ed-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:11px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea{min-height:180px;resize:vertical;line-height:1.55}
+.hint{font-size:11.5px;color:var(--muted)}
+.ed-actions{flex:none;display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--line);
+  background:color-mix(in srgb,var(--surface) 80%,var(--bg))}
+
+.status{flex:none;display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:9px 16px;font-size:12px;
+  color:var(--muted);background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:calc(9px + env(safe-area-inset-bottom))}
+.status b{color:var(--text);font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(var(--status-h) + 26px);transform:translate(-50%,220%);
+  background:var(--surface);border:1px solid var(--amber);border-radius:12px;padding:12px 16px;box-shadow:var(--shadow);
+  display:flex;gap:14px;align-items:center;z-index:60;transition:transform .3s cubic-bezier(.2,.9,.3,1);max-width:92vw}
+.toast.show{transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:rgba(6,9,14,.68);display:none;place-items:center;z-index:70;padding:18px}
+.modal.show{display:grid}
+.modal .box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;
+  max-width:520px;width:100%;box-shadow:var(--shadow);max-height:88vh;overflow:auto}
+.modal h3{margin:0 0 10px}
+
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);padding:12px}
+  .brand p{display:none}
+  .filters{order:3;width:100%;overflow-x:auto;padding-bottom:2px}
+  .search{flex:1 1 auto}
+  .editor{position:fixed;inset:0;z-index:50;border-radius:0;border:0;height:100dvh;
+    transform:translateX(101%);transition:transform .25s ease}
+  .editor.open{transform:translateX(0)}
+  .ed-actions{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+  .toast{bottom:calc(var(--status-h) + 40px)}
+}
+@media print{
+  body{height:auto;overflow:visible;background:#fff;color:#000}
+  .top,.tools,.views,.pane,.status,.toast,.modal,.ed-actions,.ed-head{display:none!important}
+  .wrap{display:block;padding:0}
+  .editor{position:static;border:0;background:#fff;color:#000;transform:none;height:auto}
+  .ed-body{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="mark">102</div>
+  <div class="brand">
+    <h1>Протокол-102</h1>
+    <p>Заметки совещаний · гимназия №102 им. М. С. Устиновой, Казань</p>
+  </div>
+  <div class="spacer"></div>
+  <span class="chip"><span class="dot" id="storeDot"></span><span id="storeName">SQLite</span></span>
+  <button class="icon-btn" id="themeBtn" title="Тема оформления">◐</button>
+  <button class="icon-btn" id="menuBtn" title="Хранилище и файлы">☰</button>
+</header>
+
+<section class="tools">
+  <div class="search">
+    <span style="color:var(--muted)">⌕</span>
+    <input id="q" type="text" placeholder="Поиск: слово, автор, тег…" autocomplete="off">
+    <button class="btn ghost sm" id="clearQ" style="border:0" title="Очистить">✕</button>
+  </div>
+  <div class="filters">
+    <select id="fCat"><option value="">Все категории</option></select>
+    <input type="date" id="fFrom" title="Дата с">
+    <input type="date" id="fTo" title="Дата по">
+    <select id="sort">
+      <option value="new">Сначала новые</option>
+      <option value="old">Сначала старые</option>
+      <option value="az">По заголовку А→Я</option>
+    </select>
+  </div>
+  <button class="btn primary" id="newBtn">+ Новая заметка</button>
+</section>
+
+<div class="views" id="viewsRow">
+  <span class="hint" style="flex:none">Сохранённые виды:</span>
+  <button class="btn sm" id="saveViewBtn" style="flex:none">+ Сохранить текущий фильтр</button>
+</div>
+
+<main class="wrap">
+  <section class="pane">
+    <div class="list-head">
+      <input type="checkbox" id="selAll" title="Выбрать все">
+      <span id="counter">—</span>
+      <span class="spacer"></span>
+      <span id="filterInfo"></span>
+    </div>
+    <div class="bulkbar" id="bulkbar">
+      <b id="bulkCount">Выбрано: 0</b>
+      <span class="spacer"></span>
+      <button class="btn sm" id="bulkExp">Экспорт выбранных</button>
+      <button class="btn sm danger" id="bulkDel">Удалить выбранные</button>
+      <button class="btn sm" id="bulkClear">Снять выделение</button>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <aside class="editor" id="editor">
+    <div class="ed-head">
+      <h2 id="edTitle">Новая заметка</h2>
+      <button class="icon-btn" id="edClose" title="Закрыть">✕</button>
+    </div>
+    <div class="ed-body">
+      <div class="field"><label>Заголовок</label><input type="text" id="eTitle" placeholder="Например: Производственное совещание"></div>
+      <div class="row">
+        <div class="field"><label>Дата</label><input type="date" id="eDate"></div>
+        <div class="field"><label>Время</label><input type="time" id="eTime"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Категория</label><select id="eCat"></select></div>
+        <div class="field"><label>Автор записи</label><input type="text" id="eAuthor" placeholder="Фамилия И. О."></div>
+      </div>
+      <div class="field"><label>Теги (через запятую)</label><input type="text" id="eTags" placeholder="поручения, сроки, ноябрь"></div>
+      <div class="field"><label>Содержание</label><textarea id="eContent" placeholder="Повестка, выступления, решения, поручения и сроки…"></textarea></div>
+      <div class="hint">Ctrl+S — сохранить, Esc — закрыть, «/» — поиск</div>
+    </div>
+    <div class="ed-actions">
+      <button class="btn primary" id="saveBtn">Сохранить</button>
+      <button class="btn" id="closeBtn">Отмена</button>
+      <button class="btn" id="mdBtn">Скачать .md</button>
+      <button class="btn" id="printBtn">Печать</button>
+      <button class="btn danger" id="delBtn">Удалить</button>
+    </div>
+  </aside>
+</main>
+
+<footer class="status" id="statusBar">
+  <span id="stStore">Хранилище: —</span>
+  <span id="stCount">Заметок: 0</span>
+  <span id="stSize"></span>
+  <span class="spacer"></span>
+  <span id="stMsg">Готово</span>
+</footer>
+
+<div class="toast" id="toast"><span id="toastText"></span><button class="btn sm" id="toastAction" style="display:none"></button></div>
+
+<div class="modal" id="menu">
+  <div class="box">
+    <h3>Хранилище и файлы</h3>
+    <div class="field" style="margin:12px 0">
+      <label>Способ хранения</label>
+      <select id="modeSel">
+        <option value="sqlite">База данных SQLite (локально)</option>
+        <option value="files">Файлы устройства (.json / .md)</option>
+      </select>
+    </div>
+    <div id="dirBox" style="display:none;margin-bottom:12px">
+      <button class="btn" id="pickDir">Выбрать папку для заметок</button>
+      <div class="hint" id="dirInfo" style="margin-top:6px"></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <button class="btn" id="expJson">Экспорт всех (.json)</button>
+      <button class="btn" id="expSqlite">Выгрузить базу (.sqlite)</button>
+      <button class="btn" id="impBtn">Импорт файлов</button>
+      <button class="btn danger" id="wipeBtn">Очистить хранилище</button>
+    </div>
+    <input type="file" id="impInput" multiple accept=".json,.md,.txt,.sqlite,.db" style="display:none">
+    <div class="hint" style="margin-top:12px">SQLite сохраняется на устройстве и переживает перезапуск. Файловый режим пишет каждую заметку отдельным файлом в выбранную папку (Chrome/Edge на ПК) либо работает через экспорт и импорт файлов.</div>
+    <div style="margin-top:14px;text-align:right"><button class="btn primary" id="menuClose">Закрыть</button></div>
+  </div>
+</div>
+
+<div class="modal" id="confirm">
+  <div class="box" style="max-width:430px">
+    <h3 id="cfTitle">Удалить?</h3>
+    <p class="hint" id="cfText"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+      <button class="btn" id="cfNo">Отмена</button>
+      <button class="btn danger" id="cfYes">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="viewModal">
+  <div class="box" style="max-width:430px">
+    <h3>Сохранить текущий вид</h3>
+    <div class="field"><label>Название вида</label><input type="text" id="viewName" placeholder="Например: Педсоветы за ноябрь"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+      <button class="btn" id="viewCancel">Отмена</button>
+      <button class="btn primary" id="viewSave">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1/dist/sql-wasm.js"></script>
+<script>
+"use strict";
+const CDN="https://cdn.jsdelivr.net/npm/sql.js@1/dist/";
+const CATS=[["Совещание","var(--amber)"],["Педсовет","var(--blue)"],["Родительское собрание","var(--green)"],
+            ["Конференция","var(--violet)"],["Совещание при директоре","var(--red)"],["Другое","var(--muted)"]];
+const $=id=>document.getElementById(id);
+const App={mode:localStorage.getItem("p102.mode")||"sqlite",SQL:null,db:null,dir:null,fileNotes:[],
+           notes:[],editing:null,ready:false,selected:new Set(),
+           views:JSON.parse(localStorage.getItem("p102.views")||"[]")};
+
+const uid=()=> (self.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(16).slice(2));
+const pad=n=>String(n).padStart(2,"0");
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());};
+const nowHM=()=>{const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes());};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const catColor=c=>(CATS.find(x=>x[0]===c)||CATS[5])[1];
+function fmtDate(iso){if(!iso)return"";const p=String(iso).split("-");if(p.length<3)return iso;
+  const mn=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
+  return `${+p[2]} ${mn[+p[1]-1]||""} ${p[0]}`;}
+function toast(msg,label,action){
+  $("toastText").textContent=msg;const b=$("toastAction");
+  if(label){b.style.display="";b.textContent=label;b.onclick=()=>{action();hideToast();};}else b.style.display="none";
+  $("toast").classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(hideToast,6500);
+}
+const hideToast=()=>$("toast").classList.remove("show");
+const status=m=>{$("stMsg").textContent=m;};
+function ask(title,text){return new Promise(res=>{
+  $("cfTitle").textContent=title;$("cfText").textContent=text;$("confirm").classList.add("show");
+  $("cfYes").onclick=()=>{$("confirm").classList.remove("show");res(true);};
+  $("cfNo").onclick=()=>{$("confirm").classList.remove("show");res(false);};});}
+function download(name,data,type){
+  const blob=data instanceof Blob?data:new Blob([data],{type:type||"text/plain;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+const u8b64=u=>{let s="";for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
+const b64u8=b=>{const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;};
+
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open("p102",1);
+  r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function kvSet(k,v){
+  try{const db=await idb();await new Promise((res,rej)=>{const t=db.transaction("kv","readwrite");
+    t.objectStore("kv").put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error);});}
+  catch(e){if(v instanceof Uint8Array)localStorage.setItem("p102."+k,u8b64(v));
+           else if(typeof v==="string")localStorage.setItem("p102."+k,v);}
+}
+async function kvGet(k){
+  try{const db=await idb();return await new Promise((res,rej)=>{const t=db.transaction("kv","readonly");
+    const q=t.objectStore("kv").get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);});}
+  catch(e){const v=localStorage.getItem("p102."+k);if(!v)return null;try{return b64u8(v);}catch(_){return null;}}
+}
+
+async function initSQLite(){
+  if(typeof initSqlJs!=="function")throw new Error("библиотека SQLite не загрузилась");
+  if(!App.SQL)App.SQL=await initSqlJs({locateFile:f=>CDN+f});
+  const saved=await kvGet("db");
+  App.db=saved?new App.SQL.Database(saved instanceof Uint8Array?saved:b64u8(saved)):new App.SQL.Database();
+  App.db.run(`CREATE TABLE IF NOT EXISTS notes(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,date TEXT,time TEXT,
+    category TEXT,author TEXT,tags TEXT,content TEXT,created TEXT,updated TEXT);`);
+  if(!saved){seedRows();await persistSQLite();}
+}
+async function persistSQLite(){await kvSet("db",App.db.export());}
+function rowsToNotes(res){if(!res.length)return[];const c=res[0].columns;
+  return res[0].values.map(v=>Object.fromEntries(c.map((k,i)=>[k,v[i]])));}
+function seedRows(){
+  const d=today(),t=new Date().toISOString();
+  [["Производственное совещание",d,"09:00","Совещание при директоре","Тахавиева Э. Ф.","планы, ноябрь",
+    "Повестка: планы на ноябрь, подготовка к олимпиадам, отчёт по питанию.\nРешения:\n1) Зам. по УР — график пробных ОГЭ до 20 числа.\n2) Классным руководителям — сверить посещаемость.\n3) Зам. по АХЧ — проверить освещение в спортзале."],
+   ["Педагогический совет",d,"14:30","Педсовет","Секретарь педсовета","ФОП, четверть",
+    "Обсуждали итоги четверти и реализацию ФОП ООО.\nПоручение: руководителям методобъединений сдать анализ до пятницы."],
+   ["Родительское собрание 9-х классов",d,"18:00","Родительское собрание","Классный руководитель","профиль, 10 класс",
+    "Профильный отбор в 10 класс: инженерный, естественно-научный, гуманитарный.\nСбор заявлений до конца месяца."],
+   ["Конференция имени М. С. Устиновой",d,"11:00","Конференция","Зам. по УР","конференция, проекты",
+    "Секции: инженерная, естественно-научная, гуманитарная. Кураторы проектов — из КНИТУ и КФУ."]]
+  .forEach(r=>App.db.run("INSERT INTO notes(title,date,time,category,author,tags,content,created,updated) VALUES(?,?,?,?,?,?,?,?,?)",[...r,t,t]));
+}
+const query=()=>({q:$("q").value.trim(),cat:$("fCat").value,from:$("fFrom").value,to:$("fTo").value,sort:$("sort").value});
+function sqlList(){
+  const f=query();let s="SELECT * FROM notes WHERE 1=1",p=[];
+  if(f.q){s+=" AND (title LIKE ? OR content LIKE ? OR tags LIKE ? OR author LIKE ?)";const l="%"+f.q+"%";p.push(l,l,l,l);}
+  if(f.cat){s+=" AND category=?";p.push(f.cat);}
+  if(f.from){s+=" AND date>=?";p.push(f.from);}
+  if(f.to){s+=" AND date<=?";p.push(f.to);}
+  s+= f.sort==="old"?" ORDER BY date ASC,time ASC":f.sort==="az"?" ORDER BY title COLLATE NOCASE ASC":" ORDER BY date DESC,time DESC";
+  return rowsToNotes(App.db.exec(s,p));
+}
+async function sqlSave(n){
+  const t=new Date().toISOString();
+  if(n.id){App.db.run("UPDATE notes SET title=?,date=?,time=?,category=?,author=?,tags=?,content=?,updated=? WHERE id=?",
+    [n.title,n.date,n.time,n.category,n.author,n.tags,n.content,t,n.id]);}
+  else{App.db.run("INSERT INTO notes(title,date,time,category,author,tags,content,created,updated) VALUES(?,?,?,?,?,?,?,?,?)",
+    [n.title,n.date,n.time,n.category,n.author,n.tags,n.content,t,t]);
+    n.id=App.db.exec("SELECT last_insert_rowid()")[0].values[0][0];}
+  await persistSQLite();return n;
+}
+async function sqlDelete(id){App.db.run("DELETE FROM notes WHERE id=?",[id]);await persistSQLite();}
+
+const LS_FILES="p102.files.v1";
+async function initFiles(){
+  const h=await kvGet("dir");
+  if(h&&window.showDirectoryPicker){try{if(await h.queryPermission({mode:"readwrite"})==="granted")App.dir=h;}catch(e){}}
+  if(App.dir)await readDir();
+  else{App.fileNotes=JSON.parse(localStorage.getItem(LS_FILES)||"[]");if(!App.fileNotes.length)seedFiles();}
+  updateDirInfo();
+}
+function seedFiles(){
+  const d=today(),t=new Date().toISOString();
+  App.fileNotes=[
+    {id:uid(),title:"Производственное совещание",date:d,time:"09:00",category:"Совещание при директоре",
+     author:"Тахавиева Э. Ф.",tags:"планы, ноябрь",content:"Повестка: планы на ноябрь.\nРешения: график пробных ОГЭ, сверка посещаемости.",created:t,updated:t},
+    {id:uid(),title:"Родительское собрание 9-х классов",date:d,time:"18:00",category:"Родительское собрание",
+     author:"Классный руководитель",tags:"профиль",content:"Профильный отбор в 10 класс. Сбор заявлений до конца месяца.",created:t,updated:t}];
+  localStorage.setItem(LS_FILES,JSON.stringify(App.fileNotes));
+}
+async function readDir(){
+  App.fileNotes=[];
+  for await(const [name,h] of App.dir.entries()){
+    if(h.kind==="file"&&name.toLowerCase().endsWith(".json")){
+      try{const n=JSON.parse(await (await h.getFile()).text());
+        if(n&&n.title){n.id=n.id||name.replace(/\.json$/i,"");App.fileNotes.push(n);}}catch(e){}}}
+}
+async function writeDir(n){if(!App.dir)return;
+  const fh=await App.dir.getFileHandle("note_"+n.id+".json",{create:true});
+  const w=await fh.createWritable();await w.write(JSON.stringify(n,null,2));await w.close();}
+async function removeDir(id){if(App.dir){try{await App.dir.removeEntry("note_"+id+".json");}catch(e){}}}
+const persistFiles=()=>{if(!App.dir)localStorage.setItem(LS_FILES,JSON.stringify(App.fileNotes));};
+function filesList(){
+  const f=query(),q=f.q.toLowerCase();
+  const r=App.fileNotes.filter(n=>
+    (!q||[n.title,n.content,n.tags,n.author].join(" ").toLowerCase().includes(q))&&
+    (!f.cat||n.category===f.cat)&&(!f.from||n.date>=f.from)&&(!f.to||n.date<=f.to));
+  r.sort((a,b)=> f.sort==="az"?String(a.title).localeCompare(String(b.title),"ru")
+    : f.sort==="old"?String(a.date+a.time).localeCompare(String(b.date+b.time))
+    : String(b.date+b.time).localeCompare(String(a.date+a.time)));
+  return r;
+}
+async function fileSave(n){
+  n.updated=new Date().toISOString();
+  if(!n.id){n.id=uid();n.created=n.updated;App.fileNotes.push(n);}
+  else{const i=App.fileNotes.findIndex(x=>String(x.id)===String(n.id));if(i>=0)App.fileNotes[i]=n;else App.fileNotes.push(n);}
+  persistFiles();await writeDir(n);return n;
+}
+async function fileDelete(id){App.fileNotes=App.fileNotes.filter(x=>String(x.id)!==String(id));persistFiles();await removeDir(id);}
+function updateDirInfo(){
+  $("dirInfo").textContent = App.dir?"Папка подключена: заметки пишутся файлами note_*.json"
+    : (window.showDirectoryPicker?"Папка не выбрана — заметки хранятся локально, доступен экспорт и импорт файлов."
+       :"Браузер не даёт прямой доступ к папке (iOS/Android) — используйте экспорт и импорт файлов.");
+  $("pickDir").style.display=window.showDirectoryPicker?"":"none";
+}
+
+async function initStore(){
+  App.ready=false;App.selected.clear();
+  if(App.mode==="sqlite")await initSQLite();else await initFiles();
+  App.ready=true;
+  $("storeName").textContent=App.mode==="sqlite"?"SQLite":"Файлы";
+  $("storeDot").style.background=App.mode==="sqlite"?"var(--green)":"var(--blue)";
+  $("stStore").innerHTML="Хранилище: <b>"+(App.mode==="sqlite"?"база данных SQLite":"файлы устройства")+"</b>";
+  $("dirBox").style.display=App.mode==="files"?"":"none";
+  $("expSqlite").disabled=App.mode!=="sqlite";
+  $("modeSel").value=App.mode;updateDirInfo();updateSize();
+}
+function updateSize(){
+  let size=0;
+  try{size=App.mode==="sqlite"?(App.db?App.db.export().length:0):new Blob([JSON.stringify(App.fileNotes)]).size;}catch(e){}
+  $("stSize").textContent="Объём данных: "+(size/1024).toFixed(1)+" КБ";
+}
+async function refresh(){
+  if(!App.ready)return;
+  App.notes=App.mode==="sqlite"?sqlList():filesList();
+  const ids=new Set(App.notes.map(n=>String(n.id)));
+  [...App.selected].forEach(id=>{if(!ids.has(id))App.selected.delete(id);});
+  render();updateSize();
+}
+const saveNote=n=>App.mode==="sqlite"?sqlSave(n):fileSave(n);
+const deleteNote=id=>App.mode==="sqlite"?sqlDelete(id):fileDelete(id);
+const allNotes=()=>App.mode==="sqlite"?rowsToNotes(App.db.exec("SELECT * FROM notes ORDER BY date DESC")):App.fileNotes;
+
+function render(){
+  const list=$("list");list.innerHTML="";
+  $("counter").textContent="Найдено заметок: "+App.notes.length;
+  const f=query(),parts=[];
+  if(f.q)parts.push("слово «"+f.q+"»");if(f.cat)parts.push(f.cat);
+  if(f.from)parts.push("с "+fmtDate(f.from));if(f.to)parts.push("по "+fmtDate(f.to));
+  $("filterInfo").textContent=parts.length?"Фильтр: "+parts.join(" · "):"";
+  $("stCount").innerHTML="Заметок: <b>"+App.notes.length+"</b>";
+  $("selAll").checked=App.notes.length>0&&App.selected.size===App.notes.length;
+  $("bulkbar").classList.toggle("show",App.selected.size>0);
+  $("bulkCount").textContent="Выбрано: "+App.selected.size;
+
+  if(!App.notes.length){
+    list.innerHTML=`<div class="empty">
+      <svg width="62" height="62" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+      <path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 17h5"/></svg>
+      <div>Заметок не найдено. Нажмите «+ Новая заметка» или измените фильтр.</div></div>`;
+    return;
+  }
+  App.notes.forEach(n=>{
+    const id=String(n.id),sel=App.selected.has(id);
+    const el=document.createElement("article");
+    el.className="card"+(App.editing&&String(App.editing.id)===id?" active":"")+(sel?" sel":"");
+    el.style.setProperty("--c",catColor(n.category));
+    const tags=(n.tags||"").split(",").map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tag">#${esc(t)}</span>`).join("");
+    el.innerHTML=`<div style="display:flex;gap:10px;align-items:flex-start">
+        <input type="checkbox" ${sel?"checked":""} title="Выбрать" style="margin-top:4px;flex:none">
+        <h3 style="flex:1;min-width:0">${esc(n.title)}</h3>
+        <span class="badge" style="--c:${catColor(n.category)}">${esc(n.category||"Другое")}</span></div>
+      <div class="meta"><span>${fmtDate(n.date)}</span><span>${esc(n.time||"")}</span>${n.author?`<span>${esc(n.author)}</span>`:""}</div>
+      <p class="snippet">${esc((n.content||"").slice(0,220))}</p>${tags?`<div class="tags">${tags}</div>`:""}`;
+    el.querySelector("input").onclick=e=>{e.stopPropagation();
+      if(e.target.checked)App.selected.add(id);else App.selected.delete(id);render();};
+    el.onclick=()=>openEditor(n);
+    list.appendChild(el);
+  });
+}
+function openEditor(n){
+  App.editing=n?{...n}:{id:null,title:"",date:today(),time:nowHM(),category:CATS[0][0],author:"",tags:"",content:""};
+  const e=App.editing;
+  $("edTitle").textContent=n?"Редактирование заметки":"Новая заметка";
+  $("eTitle").value=e.title||"";$("eDate").value=e.date||today();$("eTime").value=e.time||nowHM();
+  $("eCat").value=e.category||CATS[0][0];$("eAuthor").value=e.author||"";
+  $("eTags").value=e.tags||"";$("eContent").value=e.content||"";
+  ["delBtn","mdBtn","printBtn"].forEach(b=>$(b).style.display=n?"":"none");
+  $("editor").classList.add("open");render();setTimeout(()=>$("eTitle").focus(),60);
+}
+function closeEditor(){App.editing=null;$("editor").classList.remove("open");render();}
+
+async function doSave(){
+  const title=$("eTitle").value.trim();
+  if(!title){$("eTitle").focus();toast("Введите заголовок заметки");return;}
+  const n={...App.editing,title,date:$("eDate").value||today(),time:$("eTime").value||nowHM(),
+    category:$("eCat").value,author:$("eAuthor").value.trim(),tags:$("eTags").value.trim(),content:$("eContent").value};
+  const saved=await saveNote(n);App.editing=saved;await refresh();
+  $("edTitle").textContent="Редактирование заметки";
+  ["delBtn","mdBtn","printBtn"].forEach(b=>$(b).style.display="");
+  status("Сохранено: "+title);toast("Заметка сохранена");
+  if(window.innerWidth<=900)closeEditor();
+}
+async function doDelete(){
+  if(!App.editing||!App.editing.id)return;
+  if(!await ask("Удалить заметку?","«"+App.editing.title+"» будет удалена. Сразу после удаления её можно вернуть."))return;
+  const backup={...App.editing};await deleteNote(backup.id);closeEditor();await refresh();
+  status("Удалено: "+backup.title);
+  toast("Заметка удалена","Вернуть",async()=>{const r={...backup};if(App.mode==="sqlite")delete r.id;
+    await saveNote(r);await refresh();status("Заметка восстановлена");});
+}
+async function bulkDelete(){
+  const ids=[...App.selected];if(!ids.length)return;
+  if(!await ask("Удалить выбранные заметки?","Будет удалено записей: "+ids.length+". Действие можно отменить."))return;
+  const backup=allNotes().filter(n=>App.selected.has(String(n.id))).map(n=>({...n}));
+  for(const id of ids)await deleteNote(id);
+  App.selected.clear();closeEditor();await refresh();status("Удалено записей: "+ids.length);
+  toast("Удалено записей: "+ids.length,"Вернуть",async()=>{
+    for(const n of backup){const r={...n};if(App.mode==="sqlite")delete r.id;await saveNote(r);}
+    await refresh();status("Записи восстановлены");});
+}
+const noteToMd=n=>`# ${n.title}\nДата: ${n.date}\nВремя: ${n.time}\nКатегория: ${n.category}\nАвтор: ${n.author||""}\nТеги: ${n.tags||""}\n---\n${n.content||""}\n`;
+function mdToNote(text,name){
+  const lines=text.split(/\r?\n/),n={title:"",date:today(),time:nowHM(),category:"Другое",author:"",tags:"",content:""};
+  if(lines[0]&&lines[0].startsWith("# "))n.title=lines[0].slice(2).trim();
+  let i=1;
+  for(;i<lines.length;i++){const l=lines[i];if(l.trim()==="---"){i++;break;}
+    const m=l.match(/^(Дата|Время|Категория|Автор|Теги):\s*(.*)$/i);
+    if(m){const k=m[1].toLowerCase(),v=m[2].trim();
+      if(k==="дата")n.date=v;else if(k==="время")n.time=v;else if(k==="категория")n.category=v;
+      else if(k==="автор")n.author=v;else if(k==="теги")n.tags=v;}}
+  n.content=lines.slice(i).join("\n").trim();
+  if(!n.title)n.title=(name||"Заметка").replace(/\.[^.]+$/,"");
+  return n;
+}
+async function importFiles(files){
+  let count=0;
+  for(const file of files){
+    const name=file.name.toLowerCase();
+    if(name.endsWith(".sqlite")||name.endsWith(".db")){
+      if(App.mode!=="sqlite"){toast("Файл базы импортируется только в режиме SQLite");continue;}
+      App.db=new App.SQL.Database(new Uint8Array(await file.arrayBuffer()));await persistSQLite();count++;continue;}
+    const text=await file.text();
+    if(name.endsWith(".json")){
+      let data;try{data=JSON.parse(text);}catch(e){continue;}
+      for(const n of (Array.isArray(data)?data:[data])){if(!n||!n.title)continue;const c={...n};delete c.id;await saveNote(c);count++;}
+    }else{await saveNote(mdToNote(text,file.name));count++;}
+  }
+  await refresh();toast("Импортировано заметок: "+count);status("Импорт завершён");
+}
+function renderViews(){
+  const row=$("viewsRow");
+  [...row.querySelectorAll(".view")].forEach(e=>e.remove());
+  App.views.forEach((v,i)=>{
+    const el=document.createElement("div");el.className="view";
+    el.innerHTML=`<b>${esc(v.name)}</b><span class="x" title="Удалить вид">✕</span>`;
+    el.onclick=e=>{
+      if(e.target.classList.contains("x")){App.views.splice(i,1);localStorage.setItem("p102.views",JSON.stringify(App.views));renderViews();return;}
+      $("q").value=v.f.q||"";$("fCat").value=v.f.cat||"";$("fFrom").value=v.f.from||"";$("fTo").value=v.f.to||"";$("sort").value=v.f.sort||"new";
+      refresh();status("Применён вид: "+v.name);};
+    row.insertBefore(el,$("saveViewBtn"));
+  });
+}
+
+CATS.forEach(([c])=>{
+  $("fCat").insertAdjacentHTML("beforeend",`<option value="${esc(c)}">${esc(c)}</option>`);
+  $("eCat").insertAdjacentHTML("beforeend",`<option value="${esc(c)}">${esc(c)}</option>`);
+});
+document.documentElement.dataset.theme=localStorage.getItem("p102.theme")||"dark";
+$("themeBtn").onclick=()=>{const t=document.documentElement.dataset.theme==="dark"?"light":"dark";
+  document.documentElement.dataset.theme=t;localStorage.setItem("p102.theme",t);};
+$("menuBtn").onclick=()=>$("menu").classList.add("show");
+$("menuClose").onclick=()=>$("menu").classList.remove("show");
+$("menu").onclick=e=>{if(e.target===$("menu"))$("menu").classList.remove("show");};
+$("newBtn").onclick=()=>openEditor(null);
+$("closeBtn").onclick=closeEditor;$("edClose").onclick=closeEditor;
+$("saveBtn").onclick=doSave;$("delBtn").onclick=doDelete;
+$("printBtn").onclick=()=>window.print();
+$("mdBtn").onclick=()=>{if(App.editing)download((App.editing.title||"zametka")+".md",noteToMd(App.editing),"text/markdown;charset=utf-8");};
+$("clearQ").onclick=()=>{$("q").value="";refresh();};
+$("selAll").onchange=e=>{App.selected=e.target.checked?new Set(App.notes.map(n=>String(n.id))):new Set();render();};
+$("bulkClear").onclick=()=>{App.selected.clear();render();};
+$("bulkDel").onclick=bulkDelete;
+$("bulkExp").onclick=()=>{const sel=allNotes().filter(n=>App.selected.has(String(n.id)));
+  download("protokol102-vybor-"+today()+".json",JSON.stringify(sel,null,2),"application/json");
+  status("Экспортировано выбранных: "+sel.length);};
+$("saveViewBtn").onclick=()=>{$("viewName").value="";$("viewModal").classList.add("show");setTimeout(()=>$("viewName").focus(),50);};
+$("viewCancel").onclick=()=>$("viewModal").classList.remove("show");
+$("viewSave").onclick=()=>{const name=$("viewName").value.trim();if(!name){$("viewName").focus();return;}
+  App.views.push({name,f:query()});localStorage.setItem("p102.views",JSON.stringify(App.views));
+  $("viewModal").classList.remove("show");renderViews();toast("Вид сохранён: "+name);};
+let deb;["q","fCat","fFrom","fTo","sort"].forEach(id=>{
+  $(id).addEventListener("input",()=>{clearTimeout(deb);deb=setTimeout(refresh,180);});
+  $(id).addEventListener("change",refresh);});
+$("modeSel").onchange=async e=>{
+  try{App.mode=e.target.value;localStorage.setItem("p102.mode",App.mode);closeEditor();await initStore();await refresh();
+    toast("Режим хранения: "+(App.mode==="sqlite"?"SQLite":"файлы"));status("Хранилище переключено");}
+  catch(err){App.mode="files";localStorage.setItem("p102.mode","files");await initStore();await refresh();
+    toast("SQLite недоступна, включён файловый режим");}
+};
+$("pickDir").onclick=async()=>{
+  try{App.dir=await window.showDirectoryPicker({mode:"readwrite"});await kvSet("dir",App.dir);
+    await readDir();await refresh();updateDirInfo();toast("Папка подключена, заметок: "+App.fileNotes.length);}
+  catch(e){if(e.name!=="AbortError")toast("Папка не выбрана");}
+};
+$("expJson").onclick=()=>{const all=allNotes();
+  download("protokol102-"+today()+".json",JSON.stringify(all,null,2),"application/json");
+  status("Экспортировано заметок: "+all.length);};
+$("expSqlite").onclick=()=>{if(App.mode!=="sqlite")return;
+  download("protokol102-"+today()+".sqlite",new Blob([App.db.export()],{type:"application/x-sqlite3"}));
+  status("База SQLite выгружена в файл");};
+$("impBtn").onclick=()=>$("impInput").click();
+$("impInput").onchange=async e=>{await importFiles([...e.target.files]);e.target.value="";};
+$("wipeBtn").onclick=async()=>{
+  if(!await ask("Очистить хранилище?","Все заметки текущего режима будут удалены без возможности отмены."))return;
+  if(App.mode==="sqlite"){App.db.run("DELETE FROM notes");await persistSQLite();}
+  else{for(const n of [...App.fileNotes])await removeDir(n.id);App.fileNotes=[];persistFiles();}
+  App.selected.clear();closeEditor();await refresh();toast("Хранилище очищено");};
+document.addEventListener("keydown",e=>{
+  const k=e.key.toLowerCase(),tag=document.activeElement.tagName;
+  if((e.ctrlKey||e.metaKey)&&k==="s"){e.preventDefault();if(App.editing)doSave();}
+  if((e.ctrlKey||e.metaKey)&&k==="n"){e.preventDefault();openEditor(null);}
+  if(e.key==="Escape"){$("menu").classList.remove("show");$("confirm").classList.remove("show");
+    $("viewModal").classList.remove("show");if(App.editing)closeEditor();}
+  if(e.key==="/"&&tag!=="INPUT"&&tag!=="TEXTAREA"&&tag!=="SELECT"){e.preventDefault();$("q").focus();}
+});
+function syncStatusHeight(){
+  const h=$("statusBar").getBoundingClientRect().height;
+  document.documentElement.style.setProperty("--status-h",h+"px");
+}
+window.addEventListener("resize",syncStatusHeight);
+
+(async function start(){
+  renderViews();
+  try{await initStore();}
+  catch(err){App.mode="files";localStorage.setItem("p102.mode","files");
+    try{await initStore();}catch(e2){}
+    toast("SQLite недоступна ("+err.message+"). Включён файловый режим.");}
+  await refresh();syncStatusHeight();status("Готово к работе");
+  if(window.innerWidth>900&&!App.editing&&App.notes.length)openEditor(App.notes[0]);
+})();
+</script>
+</body>
+</html>
