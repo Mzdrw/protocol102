@@ -10,7 +10,8 @@
   --bg:#0F141C; --surface:#161D28; --field:#1D2634; --line:#2A3648;
   --text:#E9EFF7; --muted:#93A6C0; --amber:#F2B441; --blue:#4EA1FF;
   --green:#7CE38B; --red:#FF6B6B; --violet:#C77DFF;
-  --shadow:0 18px 40px rgba(0,0,0,.45); --status-h:38px;
+  --shadow:0 18px 40px rgba(0,0,0,.45);
+  --app-h:100dvh; --vv-top:0px; --status-h:38px;
 }
 [data-theme="light"]{
   --bg:#F4F1EA; --surface:#FFFFFF; --field:#F2EFE8; --line:#DED7CA;
@@ -19,7 +20,7 @@
 }
 *{box-sizing:border-box}
 html{height:100%}
-body{margin:0;height:100vh;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);
+body{margin:0;height:var(--app-h);overflow:hidden;background:var(--bg);color:var(--text);
   font:15px/1.5 "Segoe UI",Roboto,-apple-system,"Helvetica Neue",sans-serif;
   display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -35,10 +36,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 ::-webkit-scrollbar-thumb:hover{background:var(--amber);background-clip:padding-box}
 *{scrollbar-color:var(--line) var(--bg);scrollbar-width:thin}
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
-input[type=checkbox]{accent-color:var(--amber);width:16px;height:16px;cursor:pointer}
+input[type=checkbox]{accent-color:var(--amber);width:17px;height:17px;cursor:pointer}
 
 .top,.tools,.views,.wrap,.status{position:relative;z-index:1}
 .top{flex:none;display:flex;align-items:center;gap:12px;padding:11px 16px;
+  padding-top:calc(11px + env(safe-area-inset-top));
   background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line)}
 .mark{width:38px;height:38px;display:grid;place-items:center;border:2px solid var(--amber);color:var(--amber);
@@ -70,15 +72,15 @@ select:focus,input:focus,textarea:focus{border-color:var(--amber)}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.danger{color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--line))}
 .btn.ghost{background:none}
-.btn.sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+.btn.sm{padding:7px 11px;font-size:12.5px;border-radius:9px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ok{background:var(--green);border-color:var(--green);color:#0d1a12}
 
 .views{flex:none;display:flex;align-items:center;gap:8px;padding:8px 16px;overflow-x:auto;
   border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surface) 30%,transparent)}
 .view{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:999px;font-size:12.5px;
   border:1px dashed var(--line);background:var(--field);cursor:pointer;white-space:nowrap}
 .view:hover{border-color:var(--violet);color:var(--violet)}
-.view b{font-weight:600}
 .view span.x{color:var(--muted);padding:0 2px}
 .view span.x:hover{color:var(--red)}
 
@@ -88,49 +90,63 @@ select:focus,input:focus,textarea:focus{border-color:var(--amber)}
 .bulkbar{flex:none;display:none;align-items:center;gap:8px;margin:0 0 10px;padding:8px 12px;border-radius:12px;
   background:color-mix(in srgb,var(--amber) 14%,var(--surface));border:1px solid var(--amber);font-size:13px}
 .bulkbar.show{display:flex;flex-wrap:wrap}
-.list{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:11px;padding:2px 6px 20px 2px}
+.list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;gap:11px;padding:2px 6px 24px 2px}
 .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;
   padding:13px 15px 13px 19px;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden}
 .card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c,var(--amber))}
 .card:hover{transform:translateY(-2px);border-color:var(--c,var(--amber));box-shadow:var(--shadow)}
 .card.active{border-color:var(--amber);box-shadow:var(--shadow)}
 .card.sel{background:color-mix(in srgb,var(--amber) 8%,var(--surface))}
-.card h3{margin:0 0 6px;font-size:16.5px;line-height:1.3}
-.card .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-bottom:7px}
+.card h3{margin:0;font-size:16.5px;line-height:1.3}
+.card .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin:6px 0 7px}
 .card .snippet{margin:0;font-size:13.5px;color:color-mix(in srgb,var(--text) 76%,var(--muted));
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .badge{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--c,var(--line));
   color:var(--c,var(--muted));background:color-mix(in srgb,var(--c,var(--line)) 14%,transparent);white-space:nowrap}
+.pin{flex:none;border:0;background:none;cursor:pointer;font-size:16px;line-height:1;color:var(--muted);padding:2px 4px}
+.pin.on{color:var(--amber);text-shadow:0 0 10px color-mix(in srgb,var(--amber) 60%,transparent)}
 .tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
 .tag{font-size:11px;color:var(--violet);border:1px dashed color-mix(in srgb,var(--violet) 45%,var(--line));
   padding:2px 8px;border-radius:7px}
-.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
 
 .editor{display:flex;flex-direction:column;min-height:0;background:var(--surface);border:1px solid var(--line);
   border-radius:16px;overflow:hidden}
-.ed-head{flex:none;display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
-.ed-head h2{margin:0;font-size:17px;flex:1}
-.ed-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:11px}
+.ed-head{flex:none;display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.ed-head h2{margin:0;font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ed-body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:14px 16px;display:flex;flex-direction:column;gap:11px}
 .field{display:flex;flex-direction:column;gap:5px}
 .field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-textarea{min-height:180px;resize:vertical;line-height:1.55}
+textarea{min-height:170px;resize:vertical;line-height:1.55}
 .hint{font-size:11.5px;color:var(--muted)}
-.ed-actions{flex:none;display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--line);
-  background:color-mix(in srgb,var(--surface) 80%,var(--bg))}
+.ed-actions{flex:none;display:flex;flex-direction:column;gap:8px;padding:11px 16px;border-top:1px solid var(--line);
+  background:color-mix(in srgb,var(--surface) 86%,var(--bg));
+  padding-bottom:calc(11px + env(safe-area-inset-bottom))}
+.act-main{display:flex;gap:8px}
+.act-main .primary{flex:1}
+.act-more{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
 
 .status{flex:none;display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:9px 16px;font-size:12px;
   color:var(--muted);background:var(--surface);border-top:1px solid var(--line);
   padding-bottom:calc(9px + env(safe-area-inset-bottom))}
 .status b{color:var(--text);font-weight:600}
-.toast{position:fixed;left:50%;bottom:calc(var(--status-h) + 26px);transform:translate(-50%,220%);
-  background:var(--surface);border:1px solid var(--amber);border-radius:12px;padding:12px 16px;box-shadow:var(--shadow);
-  display:flex;gap:14px;align-items:center;z-index:60;transition:transform .3s cubic-bezier(.2,.9,.3,1);max-width:92vw}
-.toast.show{transform:translate(-50%,0)}
-.modal{position:fixed;inset:0;background:rgba(6,9,14,.68);display:none;place-items:center;z-index:70;padding:18px}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--status-h) + 22px);z-index:80;
+  display:flex;gap:14px;align-items:center;max-width:min(560px,92vw);
+  background:var(--surface);border:1px solid var(--amber);border-radius:12px;padding:11px 15px;
+  box-shadow:var(--shadow);pointer-events:none;opacity:0;visibility:hidden;
+  transform:translate(-50%,10px);transition:opacity .22s ease,transform .22s ease,visibility .22s}
+.toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.toast .btn{pointer-events:auto;flex:none}
+.toast span{min-width:0}
+
+.modal{position:fixed;inset:0;background:rgba(6,9,14,.68);display:none;place-items:center;z-index:90;padding:18px}
 .modal.show{display:grid}
 .modal .box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;
-  max-width:520px;width:100%;box-shadow:var(--shadow);max-height:88vh;overflow:auto}
+  max-width:520px;width:100%;box-shadow:var(--shadow);max-height:86vh;overflow:auto}
 .modal h3{margin:0 0 10px}
 
 @media (max-width:900px){
@@ -138,11 +154,13 @@ textarea{min-height:180px;resize:vertical;line-height:1.55}
   .brand p{display:none}
   .filters{order:3;width:100%;overflow-x:auto;padding-bottom:2px}
   .search{flex:1 1 auto}
-  .editor{position:fixed;inset:0;z-index:50;border-radius:0;border:0;height:100dvh;
-    transform:translateX(101%);transition:transform .25s ease}
+  .editor{position:fixed;left:0;right:0;top:var(--vv-top);height:var(--app-h);z-index:50;
+    border:0;border-radius:0;transform:translateX(101%);transition:transform .25s ease}
   .editor.open{transform:translateX(0)}
-  .ed-actions{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
-  .toast{bottom:calc(var(--status-h) + 40px)}
+  .ed-head{padding-top:calc(13px + env(safe-area-inset-top))}
+  .toast{top:calc(var(--vv-top) + env(safe-area-inset-top) + 10px);bottom:auto;
+    transform:translate(-50%,-10px);max-width:94vw;font-size:13.5px}
+  .toast.show{transform:translate(-50%,0)}
 }
 @media print{
   body{height:auto;overflow:visible;background:#fff;color:#000}
@@ -230,11 +248,16 @@ textarea{min-height:180px;resize:vertical;line-height:1.55}
       <div class="hint">Ctrl+S — сохранить, Esc — закрыть, «/» — поиск</div>
     </div>
     <div class="ed-actions">
-      <button class="btn primary" id="saveBtn">Сохранить</button>
-      <button class="btn" id="closeBtn">Отмена</button>
-      <button class="btn" id="mdBtn">Скачать .md</button>
-      <button class="btn" id="printBtn">Печать</button>
-      <button class="btn danger" id="delBtn">Удалить</button>
+      <div class="act-main">
+        <button class="btn primary" id="saveBtn">Сохранить</button>
+        <button class="btn" id="closeBtn">Отмена</button>
+      </div>
+      <div class="act-more">
+        <button class="btn sm" id="pinBtn">☆ Закрепить</button>
+        <button class="btn sm" id="mdBtn">Скачать .md</button>
+        <button class="btn sm" id="printBtn">Печать</button>
+        <button class="btn sm danger" id="delBtn">Удалить</button>
+      </div>
     </div>
   </aside>
 </main>
@@ -247,7 +270,9 @@ textarea{min-height:180px;resize:vertical;line-height:1.55}
   <span id="stMsg">Готово</span>
 </footer>
 
-<div class="toast" id="toast"><span id="toastText"></span><button class="btn sm" id="toastAction" style="display:none"></button></div>
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span id="toastText"></span><button class="btn sm" id="toastAction" style="display:none"></button>
+</div>
 
 <div class="modal" id="menu">
   <div class="box">
@@ -314,15 +339,17 @@ const today=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+
 const nowHM=()=>{const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes());};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const catColor=c=>(CATS.find(x=>x[0]===c)||CATS[5])[1];
+const isMobile=()=>window.matchMedia("(max-width:900px)").matches;
 function fmtDate(iso){if(!iso)return"";const p=String(iso).split("-");if(p.length<3)return iso;
   const mn=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
   return `${+p[2]} ${mn[+p[1]-1]||""} ${p[0]}`;}
 function toast(msg,label,action){
   $("toastText").textContent=msg;const b=$("toastAction");
-  if(label){b.style.display="";b.textContent=label;b.onclick=()=>{action();hideToast();};}else b.style.display="none";
-  $("toast").classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(hideToast,6500);
+  if(label){b.style.display="";b.textContent=label;b.onclick=()=>{hideToast();action();};}
+  else{b.style.display="none";b.onclick=null;}
+  $("toast").classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(hideToast,5200);
 }
-const hideToast=()=>$("toast").classList.remove("show");
+const hideToast=()=>{$("toast").classList.remove("show");clearTimeout(toast._t);};
 const status=m=>{$("stMsg").textContent=m;};
 function ask(title,text){return new Promise(res=>{
   $("cfTitle").textContent=title;$("cfText").textContent=text;$("confirm").classList.add("show");
@@ -341,8 +368,7 @@ function idb(){return new Promise((res,rej)=>{const r=indexedDB.open("p102",1);
 async function kvSet(k,v){
   try{const db=await idb();await new Promise((res,rej)=>{const t=db.transaction("kv","readwrite");
     t.objectStore("kv").put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error);});}
-  catch(e){if(v instanceof Uint8Array)localStorage.setItem("p102."+k,u8b64(v));
-           else if(typeof v==="string")localStorage.setItem("p102."+k,v);}
+  catch(e){if(v instanceof Uint8Array)localStorage.setItem("p102."+k,u8b64(v));}
 }
 async function kvGet(k){
   try{const db=await idb();return await new Promise((res,rej)=>{const t=db.transaction("kv","readonly");
@@ -357,7 +383,9 @@ async function initSQLite(){
   App.db=saved?new App.SQL.Database(saved instanceof Uint8Array?saved:b64u8(saved)):new App.SQL.Database();
   App.db.run(`CREATE TABLE IF NOT EXISTS notes(
     id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,date TEXT,time TEXT,
-    category TEXT,author TEXT,tags TEXT,content TEXT,created TEXT,updated TEXT);`);
+    category TEXT,author TEXT,tags TEXT,content TEXT,created TEXT,updated TEXT,pinned INTEGER DEFAULT 0);`);
+  const cols=rowsToNotes(App.db.exec("PRAGMA table_info(notes)")).map(c=>c.name);
+  if(!cols.includes("pinned")){App.db.run("ALTER TABLE notes ADD COLUMN pinned INTEGER DEFAULT 0");await persistSQLite();}
   if(!saved){seedRows();await persistSQLite();}
 }
 async function persistSQLite(){await kvSet("db",App.db.export());}
@@ -366,14 +394,15 @@ function rowsToNotes(res){if(!res.length)return[];const c=res[0].columns;
 function seedRows(){
   const d=today(),t=new Date().toISOString();
   [["Производственное совещание",d,"09:00","Совещание при директоре","Тахавиева Э. Ф.","планы, ноябрь",
-    "Повестка: планы на ноябрь, подготовка к олимпиадам, отчёт по питанию.\nРешения:\n1) Зам. по УР — график пробных ОГЭ до 20 числа.\n2) Классным руководителям — сверить посещаемость.\n3) Зам. по АХЧ — проверить освещение в спортзале."],
+    "Повестка: планы на ноябрь, подготовка к олимпиадам, отчёт по питанию.\nРешения:\n1) Зам. по УР — график пробных ОГЭ до 20 числа.\n2) Классным руководителям — сверить посещаемость.\n3) Зам. по АХЧ — проверить освещение в спортзале.",1],
    ["Педагогический совет",d,"14:30","Педсовет","Секретарь педсовета","ФОП, четверть",
-    "Обсуждали итоги четверти и реализацию ФОП ООО.\nПоручение: руководителям методобъединений сдать анализ до пятницы."],
+    "Обсуждали итоги четверти и реализацию ФОП ООО.\nПоручение: руководителям методобъединений сдать анализ до пятницы.",0],
    ["Родительское собрание 9-х классов",d,"18:00","Родительское собрание","Классный руководитель","профиль, 10 класс",
-    "Профильный отбор в 10 класс: инженерный, естественно-научный, гуманитарный.\nСбор заявлений до конца месяца."],
+    "Профильный отбор в 10 класс: инженерный, естественно-научный, гуманитарный.\nСбор заявлений до конца месяца.",0],
    ["Конференция имени М. С. Устиновой",d,"11:00","Конференция","Зам. по УР","конференция, проекты",
-    "Секции: инженерная, естественно-научная, гуманитарная. Кураторы проектов — из КНИТУ и КФУ."]]
-  .forEach(r=>App.db.run("INSERT INTO notes(title,date,time,category,author,tags,content,created,updated) VALUES(?,?,?,?,?,?,?,?,?)",[...r,t,t]));
+    "Секции: инженерная, естественно-научная, гуманитарная. Кураторы проектов — из КНИТУ и КФУ.",0]]
+  .forEach(r=>App.db.run("INSERT INTO notes(title,date,time,category,author,tags,content,pinned,created,updated) VALUES(?,?,?,?,?,?,?,?,?,?)",
+    [r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],t,t]));
 }
 const query=()=>({q:$("q").value.trim(),cat:$("fCat").value,from:$("fFrom").value,to:$("fTo").value,sort:$("sort").value});
 function sqlList(){
@@ -382,17 +411,17 @@ function sqlList(){
   if(f.cat){s+=" AND category=?";p.push(f.cat);}
   if(f.from){s+=" AND date>=?";p.push(f.from);}
   if(f.to){s+=" AND date<=?";p.push(f.to);}
-  s+= f.sort==="old"?" ORDER BY date ASC,time ASC":f.sort==="az"?" ORDER BY title COLLATE NOCASE ASC":" ORDER BY date DESC,time DESC";
+  s+=" ORDER BY pinned DESC,"+(f.sort==="old"?"date ASC,time ASC":f.sort==="az"?"title COLLATE NOCASE ASC":"date DESC,time DESC");
   return rowsToNotes(App.db.exec(s,p));
 }
 async function sqlSave(n){
-  const t=new Date().toISOString();
-  if(n.id){App.db.run("UPDATE notes SET title=?,date=?,time=?,category=?,author=?,tags=?,content=?,updated=? WHERE id=?",
-    [n.title,n.date,n.time,n.category,n.author,n.tags,n.content,t,n.id]);}
-  else{App.db.run("INSERT INTO notes(title,date,time,category,author,tags,content,created,updated) VALUES(?,?,?,?,?,?,?,?,?)",
-    [n.title,n.date,n.time,n.category,n.author,n.tags,n.content,t,t]);
+  const t=new Date().toISOString(),pin=n.pinned?1:0;
+  if(n.id){App.db.run("UPDATE notes SET title=?,date=?,time=?,category=?,author=?,tags=?,content=?,pinned=?,updated=? WHERE id=?",
+    [n.title,n.date,n.time,n.category,n.author,n.tags,n.content,pin,t,n.id]);}
+  else{App.db.run("INSERT INTO notes(title,date,time,category,author,tags,content,pinned,created,updated) VALUES(?,?,?,?,?,?,?,?,?,?)",
+    [n.title,n.date,n.time,n.category,n.author,n.tags,n.content,pin,t,t]);
     n.id=App.db.exec("SELECT last_insert_rowid()")[0].values[0][0];}
-  await persistSQLite();return n;
+  n.pinned=pin;await persistSQLite();return n;
 }
 async function sqlDelete(id){App.db.run("DELETE FROM notes WHERE id=?",[id]);await persistSQLite();}
 
@@ -408,9 +437,11 @@ function seedFiles(){
   const d=today(),t=new Date().toISOString();
   App.fileNotes=[
     {id:uid(),title:"Производственное совещание",date:d,time:"09:00",category:"Совещание при директоре",
-     author:"Тахавиева Э. Ф.",tags:"планы, ноябрь",content:"Повестка: планы на ноябрь.\nРешения: график пробных ОГЭ, сверка посещаемости.",created:t,updated:t},
+     author:"Тахавиева Э. Ф.",tags:"планы, ноябрь",pinned:1,
+     content:"Повестка: планы на ноябрь.\nРешения: график пробных ОГЭ, сверка посещаемости.",created:t,updated:t},
     {id:uid(),title:"Родительское собрание 9-х классов",date:d,time:"18:00",category:"Родительское собрание",
-     author:"Классный руководитель",tags:"профиль",content:"Профильный отбор в 10 класс. Сбор заявлений до конца месяца.",created:t,updated:t}];
+     author:"Классный руководитель",tags:"профиль",pinned:0,
+     content:"Профильный отбор в 10 класс. Сбор заявлений до конца месяца.",created:t,updated:t}];
   localStorage.setItem(LS_FILES,JSON.stringify(App.fileNotes));
 }
 async function readDir(){
@@ -430,13 +461,15 @@ function filesList(){
   const r=App.fileNotes.filter(n=>
     (!q||[n.title,n.content,n.tags,n.author].join(" ").toLowerCase().includes(q))&&
     (!f.cat||n.category===f.cat)&&(!f.from||n.date>=f.from)&&(!f.to||n.date<=f.to));
-  r.sort((a,b)=> f.sort==="az"?String(a.title).localeCompare(String(b.title),"ru")
-    : f.sort==="old"?String(a.date+a.time).localeCompare(String(b.date+b.time))
-    : String(b.date+b.time).localeCompare(String(a.date+a.time)));
+  r.sort((a,b)=>{
+    const p=(b.pinned?1:0)-(a.pinned?1:0);if(p)return p;
+    return f.sort==="az"?String(a.title).localeCompare(String(b.title),"ru")
+      : f.sort==="old"?String(a.date+a.time).localeCompare(String(b.date+b.time))
+      : String(b.date+b.time).localeCompare(String(a.date+a.time));});
   return r;
 }
 async function fileSave(n){
-  n.updated=new Date().toISOString();
+  n.updated=new Date().toISOString();n.pinned=n.pinned?1:0;
   if(!n.id){n.id=uid();n.created=n.updated;App.fileNotes.push(n);}
   else{const i=App.fileNotes.findIndex(x=>String(x.id)===String(n.id));if(i>=0)App.fileNotes[i]=n;else App.fileNotes.push(n);}
   persistFiles();await writeDir(n);return n;
@@ -474,7 +507,7 @@ async function refresh(){
 }
 const saveNote=n=>App.mode==="sqlite"?sqlSave(n):fileSave(n);
 const deleteNote=id=>App.mode==="sqlite"?sqlDelete(id):fileDelete(id);
-const allNotes=()=>App.mode==="sqlite"?rowsToNotes(App.db.exec("SELECT * FROM notes ORDER BY date DESC")):App.fileNotes;
+const allNotes=()=>App.mode==="sqlite"?rowsToNotes(App.db.exec("SELECT * FROM notes ORDER BY pinned DESC,date DESC")):App.fileNotes;
 
 function render(){
   const list=$("list");list.innerHTML="";
@@ -501,40 +534,58 @@ function render(){
     el.className="card"+(App.editing&&String(App.editing.id)===id?" active":"")+(sel?" sel":"");
     el.style.setProperty("--c",catColor(n.category));
     const tags=(n.tags||"").split(",").map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tag">#${esc(t)}</span>`).join("");
-    el.innerHTML=`<div style="display:flex;gap:10px;align-items:flex-start">
-        <input type="checkbox" ${sel?"checked":""} title="Выбрать" style="margin-top:4px;flex:none">
+    el.innerHTML=`<div style="display:flex;gap:9px;align-items:flex-start">
+        <input type="checkbox" ${sel?"checked":""} title="Выбрать" style="margin-top:3px;flex:none">
         <h3 style="flex:1;min-width:0">${esc(n.title)}</h3>
+        <button class="pin ${n.pinned?"on":""}" title="${n.pinned?"Открепить":"Закрепить"}">${n.pinned?"★":"☆"}</button>
         <span class="badge" style="--c:${catColor(n.category)}">${esc(n.category||"Другое")}</span></div>
       <div class="meta"><span>${fmtDate(n.date)}</span><span>${esc(n.time||"")}</span>${n.author?`<span>${esc(n.author)}</span>`:""}</div>
       <p class="snippet">${esc((n.content||"").slice(0,220))}</p>${tags?`<div class="tags">${tags}</div>`:""}`;
     el.querySelector("input").onclick=e=>{e.stopPropagation();
       if(e.target.checked)App.selected.add(id);else App.selected.delete(id);render();};
+    el.querySelector(".pin").onclick=async e=>{e.stopPropagation();
+      await saveNote({...n,pinned:n.pinned?0:1});await refresh();
+      if(App.editing&&String(App.editing.id)===id){App.editing.pinned=n.pinned?0:1;syncPinBtn();}
+      status(n.pinned?"Заметка откреплена":"Заметка закреплена");};
     el.onclick=()=>openEditor(n);
     list.appendChild(el);
   });
 }
+function syncPinBtn(){
+  const on=App.editing&&App.editing.pinned;
+  $("pinBtn").textContent=on?"★ Открепить":"☆ Закрепить";
+  $("pinBtn").style.color=on?"var(--amber)":"";
+}
 function openEditor(n){
-  App.editing=n?{...n}:{id:null,title:"",date:today(),time:nowHM(),category:CATS[0][0],author:"",tags:"",content:""};
+  App.editing=n?{...n}:{id:null,title:"",date:today(),time:nowHM(),category:CATS[0][0],author:"",tags:"",content:"",pinned:0};
   const e=App.editing;
   $("edTitle").textContent=n?"Редактирование заметки":"Новая заметка";
   $("eTitle").value=e.title||"";$("eDate").value=e.date||today();$("eTime").value=e.time||nowHM();
   $("eCat").value=e.category||CATS[0][0];$("eAuthor").value=e.author||"";
   $("eTags").value=e.tags||"";$("eContent").value=e.content||"";
   ["delBtn","mdBtn","printBtn"].forEach(b=>$(b).style.display=n?"":"none");
-  $("editor").classList.add("open");render();setTimeout(()=>$("eTitle").focus(),60);
+  syncPinBtn();resetSaveBtn();
+  $("editor").classList.add("open");render();
+  if(!isMobile())setTimeout(()=>$("eTitle").focus(),60);
 }
 function closeEditor(){App.editing=null;$("editor").classList.remove("open");render();}
+function resetSaveBtn(){$("saveBtn").classList.remove("ok");$("saveBtn").textContent="Сохранить";}
 
 async function doSave(){
   const title=$("eTitle").value.trim();
   if(!title){$("eTitle").focus();toast("Введите заголовок заметки");return;}
   const n={...App.editing,title,date:$("eDate").value||today(),time:$("eTime").value||nowHM(),
-    category:$("eCat").value,author:$("eAuthor").value.trim(),tags:$("eTags").value.trim(),content:$("eContent").value};
+    category:$("eCat").value,author:$("eAuthor").value.trim(),tags:$("eTags").value.trim(),
+    content:$("eContent").value,pinned:App.editing.pinned?1:0};
   const saved=await saveNote(n);App.editing=saved;await refresh();
   $("edTitle").textContent="Редактирование заметки";
   ["delBtn","mdBtn","printBtn"].forEach(b=>$(b).style.display="");
-  status("Сохранено: "+title);toast("Заметка сохранена");
-  if(window.innerWidth<=900)closeEditor();
+  syncPinBtn();
+  $("saveBtn").classList.add("ok");$("saveBtn").textContent="Сохранено ✓";
+  setTimeout(resetSaveBtn,1400);
+  status("Сохранено: "+title);
+  if(isMobile()){closeEditor();toast("Заметка сохранена");}
+  else toast("Заметка сохранена");
 }
 async function doDelete(){
   if(!App.editing||!App.editing.id)return;
@@ -543,6 +594,12 @@ async function doDelete(){
   status("Удалено: "+backup.title);
   toast("Заметка удалена","Вернуть",async()=>{const r={...backup};if(App.mode==="sqlite")delete r.id;
     await saveNote(r);await refresh();status("Заметка восстановлена");});
+}
+async function togglePin(){
+  if(!App.editing)return;
+  App.editing.pinned=App.editing.pinned?0:1;syncPinBtn();
+  if(App.editing.id){const s=await saveNote({...App.editing});App.editing=s;await refresh();
+    status(s.pinned?"Заметка закреплена":"Заметка откреплена");}
 }
 async function bulkDelete(){
   const ids=[...App.selected];if(!ids.length)return;
@@ -554,16 +611,16 @@ async function bulkDelete(){
     for(const n of backup){const r={...n};if(App.mode==="sqlite")delete r.id;await saveNote(r);}
     await refresh();status("Записи восстановлены");});
 }
-const noteToMd=n=>`# ${n.title}\nДата: ${n.date}\nВремя: ${n.time}\nКатегория: ${n.category}\nАвтор: ${n.author||""}\nТеги: ${n.tags||""}\n---\n${n.content||""}\n`;
+const noteToMd=n=>`# ${n.title}\nДата: ${n.date}\nВремя: ${n.time}\nКатегория: ${n.category}\nАвтор: ${n.author||""}\nТеги: ${n.tags||""}\nЗакреплено: ${n.pinned?"да":"нет"}\n---\n${n.content||""}\n`;
 function mdToNote(text,name){
-  const lines=text.split(/\r?\n/),n={title:"",date:today(),time:nowHM(),category:"Другое",author:"",tags:"",content:""};
+  const lines=text.split(/\r?\n/),n={title:"",date:today(),time:nowHM(),category:"Другое",author:"",tags:"",content:"",pinned:0};
   if(lines[0]&&lines[0].startsWith("# "))n.title=lines[0].slice(2).trim();
   let i=1;
   for(;i<lines.length;i++){const l=lines[i];if(l.trim()==="---"){i++;break;}
-    const m=l.match(/^(Дата|Время|Категория|Автор|Теги):\s*(.*)$/i);
+    const m=l.match(/^(Дата|Время|Категория|Автор|Теги|Закреплено):\s*(.*)$/i);
     if(m){const k=m[1].toLowerCase(),v=m[2].trim();
       if(k==="дата")n.date=v;else if(k==="время")n.time=v;else if(k==="категория")n.category=v;
-      else if(k==="автор")n.author=v;else if(k==="теги")n.tags=v;}}
+      else if(k==="автор")n.author=v;else if(k==="теги")n.tags=v;else if(k==="закреплено")n.pinned=/да|yes|1/i.test(v)?1:0;}}
   n.content=lines.slice(i).join("\n").trim();
   if(!n.title)n.title=(name||"Заметка").replace(/\.[^.]+$/,"");
   return n;
@@ -574,7 +631,10 @@ async function importFiles(files){
     const name=file.name.toLowerCase();
     if(name.endsWith(".sqlite")||name.endsWith(".db")){
       if(App.mode!=="sqlite"){toast("Файл базы импортируется только в режиме SQLite");continue;}
-      App.db=new App.SQL.Database(new Uint8Array(await file.arrayBuffer()));await persistSQLite();count++;continue;}
+      App.db=new App.SQL.Database(new Uint8Array(await file.arrayBuffer()));
+      const cols=rowsToNotes(App.db.exec("PRAGMA table_info(notes)")).map(c=>c.name);
+      if(!cols.includes("pinned"))App.db.run("ALTER TABLE notes ADD COLUMN pinned INTEGER DEFAULT 0");
+      await persistSQLite();count++;continue;}
     const text=await file.text();
     if(name.endsWith(".json")){
       let data;try{data=JSON.parse(text);}catch(e){continue;}
@@ -603,13 +663,14 @@ CATS.forEach(([c])=>{
 });
 document.documentElement.dataset.theme=localStorage.getItem("p102.theme")||"dark";
 $("themeBtn").onclick=()=>{const t=document.documentElement.dataset.theme==="dark"?"light":"dark";
-  document.documentElement.dataset.theme=t;localStorage.setItem("p102.theme",t);};
+  document.documentElement.dataset.theme=t;localStorage.setItem("p102.theme",t);
+  document.querySelector('meta[name=theme-color]').content=t==="dark"?"#0F141C":"#F4F1EA";};
 $("menuBtn").onclick=()=>$("menu").classList.add("show");
 $("menuClose").onclick=()=>$("menu").classList.remove("show");
 $("menu").onclick=e=>{if(e.target===$("menu"))$("menu").classList.remove("show");};
 $("newBtn").onclick=()=>openEditor(null);
 $("closeBtn").onclick=closeEditor;$("edClose").onclick=closeEditor;
-$("saveBtn").onclick=doSave;$("delBtn").onclick=doDelete;
+$("saveBtn").onclick=doSave;$("delBtn").onclick=doDelete;$("pinBtn").onclick=togglePin;
 $("printBtn").onclick=()=>window.print();
 $("mdBtn").onclick=()=>{if(App.editing)download((App.editing.title||"zametka")+".md",noteToMd(App.editing),"text/markdown;charset=utf-8");};
 $("clearQ").onclick=()=>{$("q").value="";refresh();};
@@ -659,20 +720,31 @@ document.addEventListener("keydown",e=>{
     $("viewModal").classList.remove("show");if(App.editing)closeEditor();}
   if(e.key==="/"&&tag!=="INPUT"&&tag!=="TEXTAREA"&&tag!=="SELECT"){e.preventDefault();$("q").focus();}
 });
-function syncStatusHeight(){
-  const h=$("statusBar").getBoundingClientRect().height;
-  document.documentElement.style.setProperty("--status-h",h+"px");
+
+function syncViewport(){
+  const vv=window.visualViewport;
+  const h=vv?Math.round(vv.height):window.innerHeight;
+  const top=vv?Math.round(vv.offsetTop):0;
+  document.documentElement.style.setProperty("--app-h",h+"px");
+  document.documentElement.style.setProperty("--vv-top",top+"px");
+  const sb=$("statusBar").getBoundingClientRect().height;
+  document.documentElement.style.setProperty("--status-h",sb+"px");
 }
-window.addEventListener("resize",syncStatusHeight);
+window.addEventListener("resize",syncViewport);
+window.addEventListener("orientationchange",()=>setTimeout(syncViewport,220));
+if(window.visualViewport){
+  window.visualViewport.addEventListener("resize",syncViewport);
+  window.visualViewport.addEventListener("scroll",syncViewport);
+}
 
 (async function start(){
-  renderViews();
+  syncViewport();renderViews();
   try{await initStore();}
   catch(err){App.mode="files";localStorage.setItem("p102.mode","files");
     try{await initStore();}catch(e2){}
-    toast("SQLite недоступна ("+err.message+"). Включён файловый режим.");}
-  await refresh();syncStatusHeight();status("Готово к работе");
-  if(window.innerWidth>900&&!App.editing&&App.notes.length)openEditor(App.notes[0]);
+    toast("SQLite недоступна. Включён файловый режим.");}
+  await refresh();syncViewport();status("Готово к работе");
+  if(!isMobile()&&App.notes.length)openEditor(App.notes[0]);
 })();
 </script>
 </body>
